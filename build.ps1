@@ -1,0 +1,1 @@
+g++ -std=c++11 -I./include main.cpp .\include\* -o main -finput-charset=utf-8 -mwindows
