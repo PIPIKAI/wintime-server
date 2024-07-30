@@ -1,8 +1,8 @@
-#include "gui.h"
+ï»¿#include "gui.h"
 
 #define WM_TRAYICON (WM_APP + 1)
 #define GRAY_BLACK RGB(40, 40, 40)
-// ¼ÙÉèÒÑ¶¨ÒåµÄ¶Ô»°¿ò×ÊÔ´IDÎª IDD_APIKEYDIALOG
+// å‡è®¾å·²å®šä¹‰çš„å¯¹è¯æ¡†èµ„æºIDä¸º IDD_APIKEYDIALOG
 #define IDD_APIKEYDIALOG 601
 #define IDC_APIKEYEDIT 602
 #define ID_EDITBOX 110
@@ -10,7 +10,7 @@
 #define ID_CLSBTN 113
 #define ID_TEXT 114
 
-int SavaInputContent(TCHAR* path, TCHAR* content) {
+static int SavaInputContent(TCHAR* path, TCHAR* content) {
 
 
     // FILE *fSvae ;
@@ -18,12 +18,12 @@ int SavaInputContent(TCHAR* path, TCHAR* content) {
     // fSvae = fopen( path, "w" ) ;
     // if(fSvae == NULL)
     // {
-    //     MessageBox(NULL, TEXT("ÎÄ¼ş´´½¨Ê§°Ü!"), TEXT("ÌáÊ¾"), MB_OK | MB_ICONINFORMATION) ;
+    //     MessageBox(NULL, TEXT("æ–‡ä»¶åˆ›å»ºå¤±è´¥!"), TEXT("æç¤º"), MB_OK | MB_ICONINFORMATION) ;
     //     return -1 ;
     // }
     // fputs( content, fSvae ) ;
     // fclose(fSvae) ;
-    MessageBox(NULL, TEXT("±£´æ³É¹¦!"), TEXT("³É¹¦"), MB_OK | MB_ICONINFORMATION);
+    MessageBox(NULL, TEXT("ä¿å­˜æˆåŠŸ!"), TEXT("æˆåŠŸ"), MB_OK | MB_ICONINFORMATION);
 
     return 0;
 }
@@ -31,19 +31,19 @@ int CreateChildWindow(HWND hwnd, HWND* hwndChild, LPARAM lParam)
 {
     HINSTANCE hInst = ((LPCREATESTRUCT)lParam)->hInstance;
 
-    //´´½¨±à¼­Çø
+    //åˆ›å»ºç¼–è¾‘åŒº
     hwndChild[ID_EDITBOX] = CreateWindow(TEXT("edit"), NULL,
         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
         0, 0, 0, 0,
         hwnd, (HMENU)ID_EDITBOX, hInst, NULL);
 
-    //±£´æ°´Å¥
-    hwndChild[ID_SAVEBTN] = CreateWindow(TEXT("button"), TEXT("±£´æ"),
+    //ä¿å­˜æŒ‰é’®
+    hwndChild[ID_SAVEBTN] = CreateWindow(TEXT("button"), TEXT("ä¿å­˜"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0,
         hwnd, (HMENU)ID_SAVEBTN, hInst, NULL);
 
-    //Çå¿Õ°´Å¥
-    hwndChild[ID_CLSBTN] = CreateWindow(TEXT("button"), TEXT("ÖØÖÃ"),
+    //æ¸…ç©ºæŒ‰é’®
+    hwndChild[ID_CLSBTN] = CreateWindow(TEXT("button"), TEXT("é‡ç½®"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0,
         hwnd, (HMENU)ID_CLSBTN, hInst, NULL);
 
@@ -54,16 +54,16 @@ int CreateChildWindow(HWND hwnd, HWND* hwndChild, LPARAM lParam)
 INT_PTR CALLBACK ApiKeyDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
     case WM_INITDIALOG:
-        // ³õÊ¼»¯¶Ô»°¿ò
+        // åˆå§‹åŒ–å¯¹è¯æ¡†
         return (INT_PTR)TRUE;
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK) {
-            // ´¦ÀíÈ·¶¨°´Å¥
+            // å¤„ç†ç¡®å®šæŒ‰é’®
             EndDialog(hDlg, IDOK);
             return (INT_PTR)TRUE;
         }
         if (LOWORD(wParam) == IDCANCEL) {
-            // ´¦ÀíÈ¡Ïû°´Å¥
+            // å¤„ç†å–æ¶ˆæŒ‰é’®
             EndDialog(hDlg, IDCANCEL);
             return (INT_PTR)TRUE;
         }
@@ -85,9 +85,9 @@ void Gui::ShowContextMenu(HWND hwnd_) {
 
     HMENU hMenu = CreatePopupMenu();
     if (hMenu) {
-        InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, SETTINGKEY, TEXT("ÉèÖÃapi-key"));
-        InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, CONSOLEKEY, consleState == 0 ? TEXT("ÏÔÊ¾¿ØÖÆÌ¨") :  TEXT("¹Ø±Õ¿ØÖÆÌ¨"));
-        InsertMenu(hMenu, 2, MF_BYPOSITION | MF_STRING, ID_EXIT, TEXT("ÍË³ö"));
+        InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, SETTINGKEY, TEXT("è®¾ç½®api-key"));
+        InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, CONSOLEKEY, consleState == 0 ? TEXT("æ˜¾ç¤ºæ§åˆ¶å°") :  TEXT("å…³é—­æ§åˆ¶å°"));
+        InsertMenu(hMenu, 2, MF_BYPOSITION | MF_STRING, ID_EXIT, TEXT("é€€å‡º"));
         SetForegroundWindow(hwnd_);
         TrackPopupMenu(hMenu, TPM_BOTTOMALIGN, pt.x, pt.y, 0, hwnd_, NULL);
         PostMessage(hwnd_, WM_NULL, 0, 0);
@@ -108,11 +108,14 @@ Gui::Gui(HINSTANCE hInstance, LPCSTR className, LPCSTR iconName)
     freopen_s(&fp, "CONIN$", "r", stdin);
     setConsoleState();
 }
+Gui::Gui()
+{
+}
 Gui::~Gui() {
 }
 
 bool Gui::RegisteClass() {
-    // ´´½¨Ò»¸ö»ÒºÚÉ«µÄ»­Ë¢
+    // åˆ›å»ºä¸€ä¸ªç°é»‘è‰²çš„ç”»åˆ·
     // HBRUSH hbrGrayBlack = CreateSolidBrush(GRAY_BLACK);
 
     WNDCLASS wc = { 0 };
@@ -153,7 +156,7 @@ bool Gui::AddIcon() {
     return true;
 }
 
-// ´ò¿ª¿ØÖÆÌ¨
+// æ‰“å¼€æ§åˆ¶å°
 void   Gui::setConsoleState() {
     HWND consoleWindow = GetConsoleWindow();
 
@@ -167,11 +170,11 @@ void   Gui::setConsoleState() {
         else {
             ShowWindow(consoleWindow, SW_SHOW);
         }
-        std::cout << "ÏÔÊ¾¿ØÖÆÌ¨" << std::endl;
+        std::cout << "æ˜¾ç¤ºæ§åˆ¶å°" << std::endl;
 
     }
     else {
-        std::cout << "¹Ø±Õ¿ØÖÆÌ¨" << std::endl;
+        std::cout << "å…³é—­æ§åˆ¶å°" << std::endl;
         ShowWindow(consoleWindow,   SW_HIDE);
     }
 }
@@ -181,8 +184,8 @@ void Gui::Show(int nCmdShow) {
 
 LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     RECT    rect;
-    static  HWND hwndChild[5];
-    static    TCHAR* szBuffer;        //»º³åÇø 
+    static  HWND hwndChild[255];
+    static    TCHAR* szBuffer;        //ç¼“å†²åŒº 
 
     switch (uMsg) {
     case ID_EDITBOX: {
@@ -206,7 +209,7 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
             else {
                 ShowWindow(hwnd, SW_SHOW);
-                SetForegroundWindow(hwnd); // µ±ÏÔÊ¾´°¿ÚÊ±£¬½«´°¿Ú´øµ½Ç°Ì¨
+                SetForegroundWindow(hwnd); // å½“æ˜¾ç¤ºçª—å£æ—¶ï¼Œå°†çª—å£å¸¦åˆ°å‰å°
             }
         }
         break;
@@ -217,10 +220,10 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         break;
     case WM_COMMAND:
         if (LOWORD(wParam) == SETTINGKEY) {
-            // µ÷ÓÃº¯ÊıÏÔÊ¾ÊäÈë¿ò²¢´¦Àí½á¹û
+            // è°ƒç”¨å‡½æ•°æ˜¾ç¤ºè¾“å…¥æ¡†å¹¶å¤„ç†ç»“æœ
 
             ShowWindow(hwnd, SW_SHOW);
-            SetForegroundWindow(hwnd); // µ±ÏÔÊ¾´°¿ÚÊ±£¬½«´°¿Ú´øµ½Ç°Ì¨
+            SetForegroundWindow(hwnd); // å½“æ˜¾ç¤ºçª—å£æ—¶ï¼Œå°†çª—å£å¸¦åˆ°å‰å°
             return 0;
         }
         else if (LOWORD(wParam) == ID_EXIT) {
@@ -232,11 +235,11 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             return 0;
         }
         break;
-        // »æÖÆ´°¿ÚÖĞµÄÄÚÈİ
+        // ç»˜åˆ¶çª—å£ä¸­çš„å†…å®¹
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
-        // // »ñÈ¡µ±Ç°Ê±¼ä
+        // // è·å–å½“å‰æ—¶é—´
         TextOutW(hdc, 0, 0, L"api-key:", lstrlenW(L"api-key:"));
         EndPaint(hwnd, &ps);
     } break;
@@ -245,16 +248,16 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     } break;
     case WM_SIZE:
         GetClientRect(hwnd, &rect);
-        MoveWindow(hwndChild[ID_EDITBOX], 51, 0, rect.right, rect.bottom - 30, TRUE);        //µ÷ÕûÎÄ±¾±à¼­Çø
-        MoveWindow(hwndChild[ID_SAVEBTN], rect.right - 110, rect.bottom - 28, 50, 25, TRUE);            //µ÷Õû±£´æ°´Å¥
-        MoveWindow(hwndChild[ID_CLSBTN], rect.right - 55, rect.bottom - 28, 50, 25, TRUE);            //µ÷ÕûÇå¿Õ°´Å¥
+        MoveWindow(hwndChild[ID_EDITBOX], 51, 0, rect.right, rect.bottom - 30, TRUE);        //è°ƒæ•´æ–‡æœ¬ç¼–è¾‘åŒº
+        MoveWindow(hwndChild[ID_SAVEBTN], rect.right - 110, rect.bottom - 28, 50, 25, TRUE);            //è°ƒæ•´ä¿å­˜æŒ‰é’®
+        MoveWindow(hwndChild[ID_CLSBTN], rect.right - 55, rect.bottom - 28, 50, 25, TRUE);            //è°ƒæ•´æ¸…ç©ºæŒ‰é’®
         return 0;
-        // ´´½¨Ò»¸ö¶¨Ê±Æ÷
-        // ¶¨Ê±Æ÷¹ı³Ì£¨NULL±íÊ¾Ê¹ÓÃ´°¿Ú¹ı³Ì£©
+        // åˆ›å»ºä¸€ä¸ªå®šæ—¶å™¨
+        // å®šæ—¶å™¨è¿‡ç¨‹ï¼ˆNULLè¡¨ç¤ºä½¿ç”¨çª—å£è¿‡ç¨‹ï¼‰
         // case WM_TIMER:
         //     switch (wParam) {
         //         case IDT_TIMER1:
-        //             InvalidateRect(hwnd, NULL, TRUE); // Ê¹Õû¸ö´°¿ÚÎŞĞ§£¬ÇëÇóÖØ»æ
+        //             InvalidateRect(hwnd, NULL, TRUE); // ä½¿æ•´ä¸ªçª—å£æ— æ•ˆï¼Œè¯·æ±‚é‡ç»˜
         //             break;
         //     }
         //     break;
@@ -272,7 +275,7 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
         if (GetWindowText(hwndChild[ID_EDITBOX], szBuffer, 256) < 1)
         {
-            MessageBox(NULL, TEXT("api-key²»ÄÜÎª¿Õ"), TEXT("ÌáÊ¾"), MB_OK | MB_ICONINFORMATION);
+            MessageBox(NULL, TEXT("api-keyä¸èƒ½ä¸ºç©º"), TEXT("æç¤º"), MB_OK | MB_ICONINFORMATION);
             return -1;
         }
         SavaInputContent(szBuffer, szBuffer);

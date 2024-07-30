@@ -8,3 +8,19 @@
 #include "gui.h"
 #include "hook.h"
 // TODO: 在此处引用程序需要的其他标头。
+
+
+class Wintime {
+public:
+
+	Gui gui;
+	Wintime();
+	Wintime(HINSTANCE hInstance);
+	MSG Run();
+	~Wintime();
+private:
+
+};
+
+
+static Wintime wintime;

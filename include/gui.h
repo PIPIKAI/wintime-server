@@ -1,4 +1,4 @@
-#ifndef __HEAD_GUI
+﻿#ifndef __HEAD_GUI
 #define __HEAD_GUI
 
 #define _WIN32_WINNT 0x0601
@@ -24,6 +24,7 @@ class Gui
 {
 public:
     Gui(HINSTANCE hInstance, LPCSTR className, LPCSTR iconName);
+    Gui();
     ~Gui();
     bool RegisteClass();
     bool Create(LPCSTR  appName);

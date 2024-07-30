@@ -11,9 +11,12 @@ endif()
 
 project ("Wintime")
 
+find_package(CURL REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+
 include_directories("include")
 # 将源代码添加到此项目的可执行文件。
-add_executable (Wintime "Wintime.cpp" "Wintime.h" "include/gui.h" "include/hook.h" "gui.cpp" "hook.cpp")
+add_executable (Wintime "Wintime.cpp" "Wintime.h" "include/gui.h" "include/hook.h" "gui.cpp" "hook.cpp" "include/filemanager.hpp" "info.cpp")
 set_target_properties(Wintime PROPERTIES WIN32_EXECUTABLE YES)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -21,6 +24,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 # 链接 Win32 API 库
-target_link_libraries(Wintime PRIVATE user32)
+target_link_libraries(Wintime PRIVATE CURL::libcurl nlohmann_json::nlohmann_json user32)
 
 # TODO: 如有需要，请添加测试并安装目标。

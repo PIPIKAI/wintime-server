@@ -12,42 +12,43 @@ int WINAPI WinMain(
     _In_ int nCmdShow              // show state
 ){
 
-    //SetConsoleCP(CP_UTF8);
-    //// 设置控制台输出为UTF-8
-    //SetConsoleOutputCP(CP_UTF8);
-    //// SetConsoleOutputCP(936);
-    //_setmode(_fileno(stdout), _O_U16TEXT);
+    wintime = Wintime(hInstance);
 
-    // 创建控制台
-
-    Gui window(hInstance, "className", "图标名称");
-
-
-    if (!window.RegisteClass()) {
-        return -1;
-    }
-
-    if (!window.Create("xx程序")) {
-        return -1;
-    }
-
-    if (!window.AddIcon()) {
-        return -1;
-    }
-
-
-
-    window.Show(nCmdShow);
-    watchwindows();
-    //std::thread t(threadFunction);
-
-    //t.detach();
-
-    MSG msg = {};
-    while (GetMessage(&msg, nullptr, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+    MSG msg = wintime.Run();
 
     return static_cast<int>(msg.wParam);
+}
+
+Wintime::Wintime()
+{
+}
+
+Wintime::Wintime(HINSTANCE hInstance)
+{
+    gui = Gui(hInstance, APP_NAME, APP_NAME);
+    if (!gui.RegisteClass()) {
+        exit(-1);
+    }
+
+    if (!gui.Create(APP_NAME)) {
+        exit(-1);
+    }
+
+    if (!gui.AddIcon()) {
+        exit(-1);
+    }
+    gui.Show(0);
+    gui.setConsoleState();
+    auto now = std::chrono::system_clock::now();
+    last_timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+    history = History();
+}
+
+MSG Wintime::Run()
+{
+    return watchwindows();
+}
+
+Wintime::~Wintime()
+{
 }

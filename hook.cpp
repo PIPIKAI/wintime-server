@@ -1,45 +1,106 @@
-#include "hook.h"
-// ÊÂ¼ş»Øµ÷º¯Êı
+ï»¿#include "hook.h"
+// äº‹ä»¶å›è°ƒå‡½æ•°
+
+static int filterFileName(const char * fileName) {
+
+    for (const char* s : filters) {
+        if (strcmp(s, fileName) == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+void deepCopy(char*& destination, const char* source) {
+    if (source == nullptr) {
+        destination = nullptr;
+    }
+    else {
+        // Allocate memory for the destination string, including space for the null terminator
+        destination = new char[strlen(source) + 1];
+        // Copy the source string to the destination string, including the null terminator
+        strcpy(destination, source);
+        source;
+    }
+}
+
+char* getAppDataFolderPath() {
+    char path[MAX_PATH];
+    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, path))) {
+        return path;
+    }
+    else {
+        std::cerr << "Failed to get AppData folder path." << std::endl;
+        return nullptr;
+    }
+}
+
+bool createFolder(const char * folderPath) {
+    if (CreateDirectoryA(folderPath, NULL) || GetLastError() == ERROR_ALREADY_EXISTS) {
+        return true;
+    }
+    else {
+        std::cerr << "Failed to create folder: " << folderPath << std::endl;
+        return false;
+    }
+}
+
 void CALLBACK WinEventProc(HWINEVENTHOOK hook, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
-    // Ö»¹Ø×¢Ç°Ì¨´°¿Ú±ä»¯
+    // åªå…³æ³¨å‰å°çª—å£å˜åŒ–
     if (event == EVENT_SYSTEM_FOREGROUND) {
-        // »ñÈ¡½ø³ÌID
+        // è·å–è¿›ç¨‹ID
         DWORD pid;
         GetWindowThreadProcessId(hwnd, &pid);
 
-        // »ñÈ¡´°¿Ú±êÌâ
+        // è·å–çª—å£æ ‡é¢˜
         const int bufferSize = 1024;
         char windowTitle[bufferSize];
         GetWindowText(hwnd, windowTitle, bufferSize);
         RECT windowsRect;
         GetWindowRect(hwnd, &windowsRect);
-        // »ñÈ¡µ±Ç°Ê±¼ä
+        // è·å–å½“å‰æ—¶é—´
         auto now = std::chrono::system_clock::now();
         auto now_c = std::chrono::system_clock::to_time_t(now);
         std::tm now_tm = *std::localtime(&now_c);
-
-        // ³¢ÊÔ´ò¿ª½ø³ÌÒÔ²éÑ¯ÆäÃû³Æ
+        long long  now_seconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+        // å°è¯•æ‰“å¼€è¿›ç¨‹ä»¥æŸ¥è¯¢å…¶åç§°
         char processName[MAX_PATH] = { 0 };
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
         if (hProcess) {
             //WCHAR processName[MAX_PATH] = L"<unknown>";
             DWORD bufSize = sizeof(processName) / sizeof(WCHAR);
-            // »ñÈ¡½ø³ÌµÄ¿ÉÖ´ĞĞÎÄ¼şÂ·¾¶
+            // è·å–è¿›ç¨‹çš„å¯æ‰§è¡Œæ–‡ä»¶è·¯å¾„
             if (QueryFullProcessImageName(hProcess, 0, processName, &bufSize)) {
-                // processName ÏÖÔÚ°üº¬ÁË½ø³ÌµÄÍêÕûÂ·¾¶£¬¿ÉÒÔ´ÓÖĞÌáÈ¡ÎÄ¼şÃû
+                // processName ç°åœ¨åŒ…å«äº†è¿›ç¨‹çš„å®Œæ•´è·¯å¾„ï¼Œå¯ä»¥ä»ä¸­æå–æ–‡ä»¶å
                 CHAR* fileName = strrchr(processName, '\\');
 
                 if (fileName) {
-                    fileName += 1; // ÒÆ¶¯µ½·´Ğ±¸ÜºóµÄµÚÒ»¸ö×Ö·û£¬¼´Êµ¼ÊµÄÎÄ¼şÃû¿ªÊ¼Î»ÖÃ
+                    fileName += 1; // ç§»åŠ¨åˆ°åæ–œæ åçš„ç¬¬ä¸€ä¸ªå­—ç¬¦ï¼Œå³å®é™…çš„æ–‡ä»¶åå¼€å§‹ä½ç½®
                 }
                 else {
-                    fileName = processName; // Èç¹ûÎ´ÕÒµ½·´Ğ±¸Ü£¬Õû¸ö×Ö·û´®¾ÍÊÇÎÄ¼şÃû
+                    fileName = processName; // å¦‚æœæœªæ‰¾åˆ°åæ–œæ ï¼Œæ•´ä¸ªå­—ç¬¦ä¸²å°±æ˜¯æ–‡ä»¶å
                 }
-                //std::wcout << std::put_time(&now_tm, L"%Y-%m-%d %H:%M:%S") << TEXT(": ½ø³ÌÃû³Æ£º") << fileName
-                    //<< TEXT(", ´°¿ÚPID: ") << pid << TEXT(", ´°¿Ú±êÌâ: ") << windowTitle << std::endl;
 
-                if (0 != strlen(windowTitle)) {
-                    std::cout << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S") << "|½ø³ÌÃû³Æ"<< fileName <<" | PID:"<< pid<<"|"<<"´°¿Útitle:"<<windowTitle << std::endl;
+                if (!filterFileName(fileName)) {
+                    return;
+                }
+
+                long long spend = now_seconds - last_timestamp;
+                Information now_info = { 1,fileName ,windowTitle ,now_seconds };
+
+                if (last_info.uid == 0 || strcmp(last_info.windows_title, now_info.windows_title) != 0) {
+
+                    last_info.duration = spend;
+                    if (last_info.uid != 0) {
+                        std::cout << "[OLD]" << " | Windows_title: " << last_info.windows_title << " | duration: " << last_info.duration << "|" << std::endl;
+                        history.push(last_info);
+                    }
+                    std::cout << "[NOW] " << " | Windows_title: " << now_info.windows_title << std::endl;
+
+                    last_timestamp = now_seconds;
+                    last_info.created_time = now_info.created_time;
+                    deepCopy(last_info.process_name, now_info.process_name);
+                    deepCopy(last_info.windows_title, now_info.windows_title);
+                    last_info.uid = now_info.uid;
                 }
             }
 
@@ -47,7 +108,7 @@ void CALLBACK WinEventProc(HWINEVENTHOOK hook, DWORD event, HWND hwnd, LONG idOb
     }
 }
 
-// Êó±êÊÂ¼şµÄ»Øµ÷º¯Êı
+// é¼ æ ‡äº‹ä»¶çš„å›è°ƒå‡½æ•°
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
         PMSLLHOOKSTRUCT p = (PMSLLHOOKSTRUCT)lParam;
@@ -89,18 +150,18 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 
 
 
-void watchwindows() {
-    // °²×°ÊÂ¼ş¹³×Ó£¬¼àÌıÇ°Ì¨´°¿Ú±ä»¯
+MSG watchwindows() {
+    // å®‰è£…äº‹ä»¶é’©å­ï¼Œç›‘å¬å‰å°çª—å£å˜åŒ–
     HWINEVENTHOOK windowHook = SetWinEventHook(
         EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
         NULL, WinEventProc,
         0, 0,
         WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
 
-    HHOOK keyboardInputHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, 0, 0);
-    HHOOK mouseInputHook = SetWindowsHookEx(WH_MOUSE_LL, LowLevelMouseProc, 0, 0);
+    //HHOOK keyboardInputHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, 0, 0);
+    //HHOOK mouseInputHook = SetWindowsHookEx(WH_MOUSE_LL, LowLevelMouseProc, 0, 0);
 
-    // ÏûÏ¢Ñ­»·£¬È·±£³ÌĞò³ÖĞøÔËĞĞ£¬¼àÌıÊÂ¼ş
+    // æ¶ˆæ¯å¾ªç¯ï¼Œç¡®ä¿ç¨‹åºæŒç»­è¿è¡Œï¼Œç›‘å¬äº‹ä»¶
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
@@ -108,8 +169,10 @@ void watchwindows() {
         DispatchMessage(&msg);
     }
 
-    // ÒÆ³ı¹³×Ó
+    // ç§»é™¤é’©å­
     UnhookWinEvent(windowHook);
-    UnhookWindowsHookEx(keyboardInputHook);
-    UnhookWindowsHookEx(mouseInputHook);
+    //UnhookWindowsHookEx(keyboardInputHook);
+    //UnhookWindowsHookEx(mouseInputHook);
+
+    return msg;
 }
