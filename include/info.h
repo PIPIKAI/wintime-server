@@ -12,6 +12,7 @@
 #include "filemanager.hpp"
 #include "api.hpp"
 
+#define MAX_HISTORY_LEN 20
 
 class History {
 
@@ -19,7 +20,7 @@ public:
     History();
     ~History();
     FileManager* fileManager = NULL;
-    int max_size = 20;
+    int max_size = MAX_HISTORY_LEN;
     int upload();
     int clear();
     void preload();

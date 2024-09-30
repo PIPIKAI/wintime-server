@@ -33,6 +33,7 @@ public:
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     static void ShowContextMenu(HWND hwnd_);
     static void setConsoleState();
+    static bool SetApiKey(const char* key);
 private:
     HINSTANCE hInstance_;
     HWND hwnd_;

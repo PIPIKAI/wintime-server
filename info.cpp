@@ -38,6 +38,9 @@ History::~History()
 
 int History::upload()
 {
+    if (api == nullptr){
+    }
+
     return 1;
 }
 

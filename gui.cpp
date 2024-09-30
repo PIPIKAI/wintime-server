@@ -10,19 +10,10 @@
 #define ID_CLSBTN 113
 #define ID_TEXT 114
 
-static int SavaInputContent(TCHAR* path, TCHAR* content) {
+static int SavaInputContent( TCHAR* content) {
 
-
-    // FILE *fSvae ;
-
-    // fSvae = fopen( path, "w" ) ;
-    // if(fSvae == NULL)
-    // {
-    //     MessageBox(NULL, TEXT("文件创建失败!"), TEXT("提示"), MB_OK | MB_ICONINFORMATION) ;
-    //     return -1 ;
-    // }
-    // fputs( content, fSvae ) ;
-    // fclose(fSvae) ;
+    
+    // auto file = 
     MessageBox(NULL, TEXT("保存成功!"), TEXT("成功"), MB_OK | MB_ICONINFORMATION);
 
     return 0;
@@ -178,7 +169,13 @@ void   Gui::setConsoleState() {
         ShowWindow(consoleWindow,   SW_HIDE);
     }
 }
-void Gui::Show(int nCmdShow) {
+bool  Gui::SetApiKey(const char* key)
+{
+    
+    return false;
+}
+void Gui::Show(int nCmdShow)
+{
     ShowWindow(hwnd_, nCmdShow);
 }
 
@@ -278,7 +275,8 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             MessageBoxW(NULL, TEXT(L"api-key不能为空"), TEXT(L"提示"), MB_OK | MB_ICONINFORMATION);
             return -1;
         }
-        SavaInputContent(szBuffer, szBuffer);
+        SetApiKey(szBuffer);
+        SavaInputContent(szBuffer);
         return 0;
     }
 

@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <Windows.h>
+#include "constants.hpp"
 #include "gui.h"
 #include "hook.h"
 // TODO: 在此处引用程序需要的其他标头。

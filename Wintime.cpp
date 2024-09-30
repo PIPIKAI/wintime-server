@@ -46,6 +46,15 @@ Wintime::Wintime(HINSTANCE hInstance)
     gui.setConsoleState();
     auto now = std::chrono::system_clock::now();
     last_timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+    api = new Api(BASE_API);
+    FileManager fileManager = FileManager(APP_NAME, APIKEY);
+    string key = fileManager.get();
+    if(key  == ""){
+    }else{
+        string auth_res = api->auth(key);
+        gui.SetApiKey(key);
+    }
     history = History();
 }
 

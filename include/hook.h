@@ -20,6 +20,7 @@
 MSG watchwindows();
 
 static const char* APP_NAME = "Wintime";
+static const char* APIKEY = "APIKEY";
 static const char* filters[] = { "explorer.exe" };
 static long long last_timestamp = 0;
 static Information last_info = {};
