@@ -1,9 +1,13 @@
-﻿// Wintime.cpp: 定义应用程序的入口点。
+// Wintime.cpp: 定义应用程序的入口点。
 //
 
 #include "Wintime.h"
 
 using namespace std;
+
+void SetConsoleToUTF8() {
+    SetConsoleOutputCP(CP_UTF8);
+}
 
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,      // handle to current instance
@@ -11,6 +15,7 @@ int WINAPI WinMain(
     _In_ LPSTR lpCmdLine,          // command line
     _In_ int nCmdShow              // show state
 ){
+    SetConsoleToUTF8();
 
     wintime = Wintime(hInstance);
 

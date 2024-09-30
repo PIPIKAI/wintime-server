@@ -10,7 +10,6 @@ if (POLICY CMP0141)
 endif()
 
 project ("Wintime")
-
 find_package(CURL REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 

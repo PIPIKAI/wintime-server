@@ -1,4 +1,4 @@
-﻿#include "gui.h"
+#include "gui.h"
 
 #define WM_TRAYICON (WM_APP + 1)
 #define GRAY_BLACK RGB(40, 40, 40)
@@ -32,18 +32,18 @@ int CreateChildWindow(HWND hwnd, HWND* hwndChild, LPARAM lParam)
     HINSTANCE hInst = ((LPCREATESTRUCT)lParam)->hInstance;
 
     //创建编辑区
-    hwndChild[ID_EDITBOX] = CreateWindow(TEXT("edit"), NULL,
+    hwndChild[ID_EDITBOX] = CreateWindowW(TEXT(L"edit"), NULL,
         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
         0, 0, 0, 0,
         hwnd, (HMENU)ID_EDITBOX, hInst, NULL);
 
     //保存按钮
-    hwndChild[ID_SAVEBTN] = CreateWindow(TEXT("button"), TEXT("保存"),
+    hwndChild[ID_SAVEBTN] = CreateWindowW(TEXT(L"button"), TEXT(L"保存"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0,
         hwnd, (HMENU)ID_SAVEBTN, hInst, NULL);
 
     //清空按钮
-    hwndChild[ID_CLSBTN] = CreateWindow(TEXT("button"), TEXT("重置"),
+    hwndChild[ID_CLSBTN] = CreateWindowW(TEXT(L"button"), TEXT(L"重置"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0,
         hwnd, (HMENU)ID_CLSBTN, hInst, NULL);
 
@@ -85,9 +85,9 @@ void Gui::ShowContextMenu(HWND hwnd_) {
 
     HMENU hMenu = CreatePopupMenu();
     if (hMenu) {
-        InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, SETTINGKEY, TEXT("设置api-key"));
-        InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, CONSOLEKEY, consleState == 0 ? TEXT("显示控制台") :  TEXT("关闭控制台"));
-        InsertMenu(hMenu, 2, MF_BYPOSITION | MF_STRING, ID_EXIT, TEXT("退出"));
+        InsertMenuW(hMenu, 0, MF_BYPOSITION | MF_STRING, SETTINGKEY, TEXT(L"设置api-key"));
+        InsertMenuW(hMenu, 1, MF_BYPOSITION | MF_STRING, CONSOLEKEY, consleState == 0 ? TEXT(L"显示控制台") :  TEXT(L"关闭控制台"));
+        InsertMenuW(hMenu, 2, MF_BYPOSITION | MF_STRING, ID_EXIT, L"退出");
         SetForegroundWindow(hwnd_);
         TrackPopupMenu(hMenu, TPM_BOTTOMALIGN, pt.x, pt.y, 0, hwnd_, NULL);
         PostMessage(hwnd_, WM_NULL, 0, 0);
@@ -275,7 +275,7 @@ LRESULT CALLBACK Gui::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
         if (GetWindowText(hwndChild[ID_EDITBOX], szBuffer, 256) < 1)
         {
-            MessageBox(NULL, TEXT("api-key不能为空"), TEXT("提示"), MB_OK | MB_ICONINFORMATION);
+            MessageBoxW(NULL, TEXT(L"api-key不能为空"), TEXT(L"提示"), MB_OK | MB_ICONINFORMATION);
             return -1;
         }
         SavaInputContent(szBuffer, szBuffer);

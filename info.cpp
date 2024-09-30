@@ -30,7 +30,6 @@ History::History()
 {
     fileManager = new FileManager("Wintime", "CACHE");
     preload();
-
 }
 
 History::~History()

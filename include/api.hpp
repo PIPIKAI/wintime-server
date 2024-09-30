@@ -83,4 +83,4 @@ private:
 };
 
 
-static Api api;
+static Api* api = 0;
